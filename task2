@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FAQ Chatbot</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #eaf2f8;
+            padding: 30px;
+        }
+
+        .container {
+            background: white;
+            max-width: 600px;
+            margin: auto;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2455a4;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            margin: 10px 0;
+        }
+
+        button {
+            background: #2455a4;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #answer {
+            background: #eaf2ff;
+            padding: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>FAQ Chatbot</h1>
+
+<p>Welcome! Ask me any question.</p>
+
+<input type="text" id="question"
+placeholder="Enter your question">
+
+<button onclick="getAnswer()">Send</button>
+
+<h3>Chatbot Response:</h3>
+
+<div id="answer">
+Hello! How can I help you?
+</div>
+
+</div>
+
+<script>
+
+// FAQ QUESTIONS AND ANSWERS
+
+let faqs = [
+    {
+        question: "what is your name",
+        answer: "I am an FAQ chatbot."
+    },
+    {
+        question: "what is artificial intelligence",
+        answer: "Artificial Intelligence is the ability of machines to perform tasks that require human intelligence."
+    },
+    {
+        question: "what is machine learning",
+        answer: "Machine Learning is a branch of AI that allows computers to learn from data."
+    },
+    {
+        question: "what is python",
+        answer: "Python is a simple and popular programming language."
+    },
+    {
+        question: "what is chatbot",
+        answer: "A chatbot is a computer program that communicates with users."
+    },
+    {
+        question: "how are you",
+        answer: "I am fine. Thank you for asking!"
+    },
+    {
+        question: "thank you",
+        answer: "You are welcome!"
+    }
+];
+
+// TEXT PREPROCESSING
+
+function preprocess(text) {
+
+    return text.toLowerCase()
+    .replace(/[^\w\s]/g, "")
+    .split(/\s+/)
+    .filter(word => word.length > 0);
+
+}
+
+// SIMILARITY MATCHING
+
+function similarity(a, b) {
+
+    let words1 = new Set(preprocess(a));
+    let words2 = new Set(preprocess(b));
+
+    let common = [...words1].filter(
+        word => words2.has(word)
+    ).length;
+
+    let total = new Set([...words1, ...words2]).size;
+
+    return total === 0 ? 0 : common / total;
+}
+
+// GET ANSWER
+
+function getAnswer() {
+
+    let question =
+    document.getElementById("question").value;
+
+    let output =
+    document.getElementById("answer");
+
+    if (question.trim() === "") {
+        output.innerText = "Please enter a question.";
+        return;
+    }
+
+    let bestMatch = null;
+    let highestScore = 0;
+
+    faqs.forEach(faq => {
+
+        let score = similarity(
+            question,
+            faq.question
+        );
+
+        if (score > highestScore) {
+            highestScore = score;
+            bestMatch = faq;
+        }
+
+    });
+
+    if (bestMatch && highestScore >= 0.25) {
+        output.innerText = bestMatch.answer;
+    } else {
+        output.innerText =
+        "Sorry, I don't know the answer. Try another question.";
+    }
+
+}
+
+</script>
+
+</body>
+</html>
